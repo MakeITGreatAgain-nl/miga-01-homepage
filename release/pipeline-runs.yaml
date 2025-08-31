@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: homepage-frontend
+spec:
+  params:
+    - name: repo-url
+      value: "https://github.com/EKoetsjarjan/miga-01-homepage.git"
+    - name: repo-revision
+      value: main
+    - name: image-reference
+      value: "registry.container-registry.svc:5000/miga/miga-01-homepage:v0.0.1"
+  pipelineRef:
+    name: clone-build-push
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  workspaces:
+    - name: shared-data
+      persistentVolumeClaim:
+        claimName: tekton-shared-data
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pipeline

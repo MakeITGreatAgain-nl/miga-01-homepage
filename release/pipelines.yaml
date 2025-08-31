@@ -1,0 +1,68 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: clone-build-push
+spec:
+  description: |
+    This pipeline clones a git repo, builds a Docker image with Kaniko and
+    pushes it to a registry
+  params:
+    - name: repo-url
+      type: string
+    - name: repo-revision
+      type: string
+    - name: image-reference
+      type: string
+  tasks:
+    - name: fetch-source
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.repo-revision)
+      taskRef:
+        kind: Task
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data
+    - name: build-push
+      params:
+        - name: IMAGE
+          value: $(params.image-reference)
+        - name: EXTRA_ARGS
+          value:
+            - "--insecure-registry=registry.container-registry.svc:5000"
+      runAfter:
+        - fetch-source
+      taskRef:
+        kind: Task
+        name: kaniko
+      workspaces:
+        - name: source
+          workspace: shared-data
+    #kubectl create configmap kubeconfig --from-file="/path/to/kubeconfig"
+    - name: homepage-restart
+      runAfter:
+        - build-push
+      taskRef:
+        name: kubernetes-actions
+      params:
+        - name: script
+          value: |
+            kubectl rollout restart deployment/homepage-frontend -n miga-web
+  workspaces:
+    - name: shared-data
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: tekton-shared-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: microk8s-hostpath
+  volumeMode: Filesystem

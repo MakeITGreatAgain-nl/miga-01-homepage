@@ -2,6 +2,7 @@
   "scheme": "acme",
   "userInterfaceStyle": "automatic",
   "orientation": "default",
+  "owner": "makeitgreatagain",
   "web": {
     "output": "static"
   },
@@ -14,5 +15,13 @@
     ]
   ],
   "name": "01-homepage",
-  "slug": "01-homepage"
+  "slug": "01-homepage",
+  "extra": {
+    "router": {
+      "origin": "https://n"
+    },
+    "eas": {
+      "projectId": "569a1539-09f4-42d1-85b2-7f0c8e5ff525"
+    }
+  }
 }

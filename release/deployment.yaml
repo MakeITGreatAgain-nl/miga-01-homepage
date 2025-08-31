@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: miga-web
+  name: 'homepage-frontend'
+  annotations: {}
+spec:
+  selector:
+    matchLabels:
+      app: homepage-frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: homepage-frontend
+    spec:
+      containers:
+        - name: container
+          image: >-
+            localhost:32000/miga/miga-01-homepage:v0.0.1
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env: []
+      imagePullSecrets: []
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  paused: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage-frontend
+  namespace: miga-web
+spec:
+  selector:
+    app: homepage-frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http
