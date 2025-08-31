@@ -1,18 +1,19 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+const logo = require("../../assets/logo/image.png");
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
-      <h1 className="text-5xl text-white font-bold mb-8 animate-pulse">
-        Coming Soon
-      </h1>
-      <p className="text-white text-lg mb-8">
+    //bg-gray-900
+    <View className="min-h-screen flex flex-col items-center justify-center">
+      <Image source={logo} style={{ flex: 1 }} />
+      <h1 className="text-5xl font-bold mb-20 animate-pulse">Coming Soon</h1>
+      {/* <p className="text-white text-lg mb-8">
         We're working hard to bring you something amazing. Stay tuned!
-      </p>
-    </div>
+      </p> */}
+    </View>
   );
 }
 
@@ -106,3 +107,17 @@ function Footer() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  // tinyLogo: {
+  //   width: 50,
+  //   height: 50,
+  // },
+  logo: {
+    width: 66,
+    height: 58,
+  },
+});
