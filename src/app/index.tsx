@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-const logo = require("../../assets/logo/image.png");
+const logo = require("../../assets/logo/FullLogo_Transparent.png");
 
 export default function Home() {
   return (
