@@ -5,7 +5,7 @@ WORKDIR /usr/app
 
 # Install app dependencies
 COPY package.json .
-COPY yarn.lock .
+COPY package-lock.json .
 RUN npm ci 
 
 # build it
