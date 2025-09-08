@@ -1,25 +1,18 @@
+"use dom";
+import { app, db } from "@/firebaseConfig";
 import { Link } from "expo-router";
-import React from "react";
-import { Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import React, { useEffect, useState, useRef } from "react";
+import { Text, View, Image, StyleSheet, ScrollView, Alert } from "react-native";
+import * as Device from "expo-device";
+const logo = require("../../assets/logo/FullLogo_Transparent.png");
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center">
-      <h1 className="text-5xl text-white font-bold mb-8 animate-pulse">
-        Coming Soon
-      </h1>
-      <p className="text-white text-lg mb-8">
-        We're working hard to bring you something amazing. Stay tuned!
-      </p>
-    </div>
-  );
-}
+  useEffect(() => {}, []);
 
-export function Page() {
   return (
-    <View className="flex flex-1">
-      <Header />
+    <View style={styles.container}>
+      {/* <Header /> */}
       <Content />
       <Footer />
     </View>
@@ -28,81 +21,68 @@ export function Page() {
 
 function Content() {
   return (
-    <View className="flex-1">
-      <View className="py-12 md:py-24 lg:py-32 xl:py-48">
-        <View className="px-4 md:px-6">
-          <View className="flex flex-col items-center gap-4 text-center">
-            <Text
-              role="heading"
-              className="text-3xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
-            >
-              Welcome to Project ACME
-            </Text>
-            <Text className="mx-auto max-w-[700px] text-lg text-center text-gray-500 md:text-xl dark:text-gray-400">
-              Discover and collaborate on acme. Explore our services now.
-            </Text>
-
-            <View className="gap-4">
-              <Link
-                suppressHighlighting
-                className="flex h-9 items-center justify-center overflow-hidden rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                href="/"
-              >
-                Explore
-              </Link>
-            </View>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-function Header() {
-  const { top } = useSafeAreaInsets();
-  return (
-    <View style={{ paddingTop: top }}>
-      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between ">
-        <Link className="font-bold flex-1 items-center justify-center" href="/">
-          ACME
-        </Link>
-        <View className="flex flex-row gap-4 sm:gap-6">
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            About
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Product
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Pricing
-          </Link>
-        </View>
-      </View>
-    </View>
+    <ScrollView
+      contentContainerStyle={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Image source={logo} style={{ width: "100%" }} resizeMode="center" />
+    </ScrollView>
   );
 }
 
 function Footer() {
-  const { bottom } = useSafeAreaInsets();
+  const emailRef = useRef(null);
+  const [subscribed, setsubscribed] = useState(false);
+  const onSubscribe = () => {
+    const email = emailRef.current.value;
+    if (email != "" && email.includes("@"))
+      setDoc(doc(db, "subscribe", email), {
+        info: `${Device.deviceName ? Device.deviceName + ", " : ""}${
+          Device.modelName
+        }, ${Device.osName}`,
+        timetamp: Timestamp.now(),
+      }).then(() => {
+        setsubscribed(true);
+      });
+  };
   return (
     <View
-      className="flex shrink-0 bg-gray-100 native:hidden"
-      style={{ paddingBottom: bottom }}
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        paddingBottom: 50,
+      }}
     >
-      <View className="py-6 flex-1 items-start px-4 md:px-6 ">
-        <Text className={"text-center text-gray-700"}>
-          © {new Date().getFullYear()} Me
-        </Text>
-      </View>
+      <form className="max-w-md mx-auto">
+        {subscribed ? (
+          <h1 className="text-5xl font-bold mb-8 animate-pulse">Thank you</h1>
+        ) : (
+          <div className="flex items-center">
+            <input
+              type="email"
+              className="bg-gray-100 mr-3 py-2 px-4 w-full rounded-md focus:outline-none focus:bg-white"
+              placeholder="Enter your email"
+              ref={emailRef}
+            />
+            <button
+              type="button"
+              className="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+              onClick={onSubscribe}
+            >
+              Subscribe
+            </button>
+          </div>
+        )}
+      </form>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
