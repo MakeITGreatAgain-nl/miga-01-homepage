@@ -6,7 +6,8 @@ WORKDIR /usr/app
 
 # Install app dependencies
 COPY package.json .
-RUN --mount=type=cache,target=/root/.npm npm i
+# --mount=type=cache,target=/root/.npm 
+RUN npm i
 
 # build it
 COPY . .
