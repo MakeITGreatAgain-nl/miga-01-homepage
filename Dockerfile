@@ -1,11 +1,12 @@
 FROM node:22 AS builder 
 
+RUN npm install -g npm@11.6.0 
 
 WORKDIR /usr/app
 
 # Install app dependencies
 COPY package.json .
-RUN npm i
+RUN --mount=type=cache,target=/root/.npm npm i
 
 # build it
 COPY . .

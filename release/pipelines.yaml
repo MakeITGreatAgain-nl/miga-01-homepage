@@ -30,6 +30,8 @@ spec:
       params:
         - name: IMAGE
           value: $(params.image-reference)
+        - name: BIULDER_IMAGE
+          value: gcr.io/kaniko-project/executor@sha256:8e8a55c30817084be97b9b92b9a7230c4cd25f7d60b2bcda094d8a4b45db3b68
         - name: EXTRA_ARGS
           value:
             - "--insecure-registry=registry.container-registry.svc:5000"
