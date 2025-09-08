@@ -1,5 +1,5 @@
 build:
-	docker build -t miga-homepage .
+	docker build --progress plain -t miga-homepage .
 deploy:
 	docker build -t miga-homepage .
 run:

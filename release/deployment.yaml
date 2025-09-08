@@ -45,3 +45,29 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: http
+apiVersion: networking.k8s.io/v1
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage-frontend
+  namespace: miga-web
+  annotations:
+    # add an annotation indicating the issuer to use.
+    cert-manager.io/cluster-issuer: lets-encrypt
+spec:
+  tls: # < placing a host in the TLS config will determine what ends up in the cert's subjectAltNames
+  - hosts:
+    - www.makeitgreatagain.ge
+    secretName: www.makeitgreatagain.ge-cert # < cert-manager will store the created certificate in this secret.
+  rules:
+    - host: www.makeitgreatagain.ge
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage-frontend
+                port:
+                  number: 8080
