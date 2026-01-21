@@ -1,8 +1,22 @@
 "use dom";
 import { StatusBar } from "expo-status-bar";
-import { useState, useRef } from "react";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  Platform,
+} from "react-native";
+import {
+  collection,
+  doc,
+  getCountFromServer,
+  getDoc,
+  setDoc,
+  Timestamp,
+} from "firebase/firestore";
 import * as Device from "expo-device";
 const logo = require("./assets/logo/FullLogo_Transparent.png");
 import { Card, ListItem, Button, Icon } from "@rneui/themed";
@@ -10,29 +24,45 @@ import { app, db } from "./firebaseConfig";
 
 export default function App() {
   const [subscribed, setsubscribed] = useState(false);
+  const [count, setcount] = useState(-1);
   const emailRef = useRef<HTMLInputElement>(null);
   const onSubscribe = () => {
+    console.debug("onSubscribe++");
     if (!emailRef.current) {
+      console.info("no ref");
       return;
     }
     const email = emailRef.current.value;
-    if (email != "" && email.includes("@"))
-      setDoc(doc(db, "subscribe", email), {
-        info: `${Device.deviceName ? Device.deviceName + ", " : ""}${
-          Device.modelName
-        }, ${Device.osName}`,
-        timetamp: Timestamp.now(),
+    if (email.trim() == "" || !email.includes("@")) {
+      console.debug("not an email");
+      return;
+    }
+    setDoc(doc(db, "subscribe", email), {
+      info: `${Device.deviceName ? Device.deviceName + ", " : ""}${
+        Device.modelName
+      }, ${Device.osName}`,
+      timetamp: Timestamp.now(),
+    })
+      .then(() => {
+        setsubscribed(true);
       })
-        .then(() => {
-          setsubscribed(true);
-        })
-        .catch((error) => {
-          console.error("Firebase", error);
-        });
+      .catch((error) => {
+        console.error("Firebase", error);
+      });
   };
+
+  useEffect(() => {
+    console.debug("App++");
+    getDoc(doc(db, "counters", "subscribed")).then((snapshot) => {
+      const data = snapshot.data();
+      const { homepage } = data as { homepage: number };
+      setcount(homepage);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
+      {Platform.OS === "web" && <title>Makeitgreatagain.ge</title>}
       <View style={{ flex: 8 }}>
         <Image
           source={logo}
@@ -40,6 +70,11 @@ export default function App() {
           resizeMode="center"
         />
       </View>
+      {count > 0 && (
+        <View style={{ flex: 1 }}>
+          <p className="max-w-md mx-auto text-gray">Subscribed: {count}</p>
+        </View>
+      )}
       <View style={{ flex: 2 }}>
         <form className="max-w-md mx-auto">
           {subscribed ? (
