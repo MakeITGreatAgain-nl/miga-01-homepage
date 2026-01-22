@@ -1,26 +1,10 @@
 "use dom";
-import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  Platform,
-} from "react-native";
-import {
-  collection,
-  doc,
-  getCountFromServer,
-  getDoc,
-  setDoc,
-  Timestamp,
-} from "firebase/firestore";
+import { StyleSheet, View, Image, Platform } from "react-native";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import * as Device from "expo-device";
 const logo = require("./assets/logo/FullLogo_Transparent.png");
-import { Card, ListItem, Button, Icon } from "@rneui/themed";
-import { app, db } from "./firebaseConfig";
+import { db } from "./firebaseConfig";
 
 export default function App() {
   const [subscribed, setsubscribed] = useState(false);
